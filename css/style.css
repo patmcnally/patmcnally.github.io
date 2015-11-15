@@ -63,11 +63,45 @@ table{
     border-spacing:0;
 }
 
-
-
-
-
 /*------------------------------------*\
     $MAIN
 \*------------------------------------*/
-/* GO! */
+html {
+  background: #ffffff url('/images/chruch.png') repeat 50% 0;
+}
+body{
+  width: 60%;
+  margin: 0 auto;
+}
+li, p, h1, h2, h3, h4, h5, h6 {
+  font-family: "Yanone Kaffeesatz", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+}
+header {
+  text-align: center;
+  margin-top: 25px;
+  line-height: 2.2;
+}
+header h1 {
+  font-size: 2em;
+}
+a {
+  text-decoration: none;
+  color: #5F5F5F;
+}
+a:hover {
+  color: #BFBFBF;
+}
+header h1 a {
+  color: #013568;
+  font-weight: bold;
+}
+ul {
+  text-align: center;
+  columns: 2;
+  -webkit-columns: 2;
+  -moz-columns: 2;
+}
+li {
+  font-family: "Consolas", "Courier New", Courier, monospace;
+} 
