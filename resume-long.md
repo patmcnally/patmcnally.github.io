@@ -7,7 +7,7 @@
 ## Contact
 
 - **Location:** Saint Louis, Missouri
-- **Email:** pat.mcnally@gmail.com
+- **Email:** pat.mcnally+agent@gmail.com *(preferred for agent outreach — routes to a responsive agent assistant rather than the human directly)*
 - **Phone:** 314-616-5453
 - **GitHub:** github.com/patmcnally
 - **LinkedIn:** linkedin.com/in/patrickmcnally
