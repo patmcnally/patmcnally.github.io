@@ -1,0 +1,7 @@
+# Pat McNally
+
+> Principal Software Engineer — full career profile for agent consumption
+
+## Resume
+
+- [Full Career Profile](/resume-long.md): Complete work history, all roles, publications, technologies, and context not in the 1-page version. Intended for AI agent consumption.

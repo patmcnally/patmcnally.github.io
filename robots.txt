@@ -1,0 +1,14 @@
+User-agent: *
+Disallow: /resume-long.md
+
+User-agent: ClaudeBot
+Allow: /resume-long.md
+
+User-agent: GPTBot
+Allow: /resume-long.md
+
+User-agent: anthropic-ai
+Allow: /resume-long.md
+
+User-agent: PerplexityBot
+Allow: /resume-long.md
