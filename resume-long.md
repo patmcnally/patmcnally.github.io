@@ -49,7 +49,6 @@ Embedded consulting engagements at Bayer Crop Science and PepsiCo; also contribu
 - Built and maintained a Go/gRPC service providing access to genomic reference sequences and variant call format (VCF) data — the authoritative data layer for crop scientists running statistical imputation workloads; exposed via gRPC API and CLI
 - Services ran on Google Kubernetes Engine as part of an event-driven genomic imputation pipeline; the GKE cluster scaled to **15,000 nodes, 240,000 CPUs, and 1.48 PiB RAM** — one of the largest GKE clusters ever deployed in Google Cloud
 - Work featured in Google Cloud Blog, June 2020: *"Bayer Crop Science seeds the future with 15000-node GKE clusters"*
-- Client lead: **Rob Long**, Data Engineering Lead / Genomics Engineering Lead, Bayer Crop Science
 
 #### PepsiCo — Agro R&D Data Platform
 
@@ -67,7 +66,7 @@ Embedded consulting engagements at Bayer Crop Science and PepsiCo; also contribu
 - Invited to mentor/support Social Determinants of Health Hackathon (August 2019, COVO, St. Louis; in partnership with AWS) early in tenure — recognized as an internal expert
 - Active participant in STL Data & Analytics (D&A) practice
 
-**Company context:** Joined October 1, 2018. At the time: Fortune 100 Best Companies to Work For (2016–2018 consecutive), ~$1B revenue, ~7,500 employees. By departure: Forbes World's Best Management Consulting Firms, first CTO hired, ~$2–3B revenue, 8 consecutive Fortune 100 years. GM St. Louis: Saint Fults. Office: 7800 Forsyth Blvd, Suite 850, Clayton.
+**Company context:** Joined October 1, 2018. At the time: Fortune 100 Best Companies to Work For (2016–2018 consecutive), ~$1B revenue, ~7,500 employees. By departure: Forbes World's Best Management Consulting Firms, first CTO hired, ~$2–3B revenue, 8 consecutive Fortune 100 years. Office: 7800 Forsyth Blvd, Suite 850, Clayton.
 
 ---
 
@@ -84,7 +83,7 @@ Embedded consulting engagements at Bayer Crop Science and PepsiCo; also contribu
 
 - Technical lead across multiple engineering teams for a PHP, Clojure, Python, and JavaScript stack serving **3.5 billion monthly pageviews**
 - At peak (September 2014): Answers.com reached **#6 largest site in the US**, above Twitter and Yahoo in unique monthly reach — growth credited to the "Red Carpet initiative" and "Gutenberg investments"
-- Initiated the **Decoupling Discussion Group** (June 2014) to modernize the legacy internal platform ("Rubix"); assembled Patrick Hawley (UX Team Lead), Tom Bremer, and David Atchley; effort became the multi-site publishing platform
+- Initiated the **Decoupling Discussion Group** (June 2014) to modernize the legacy internal platform ("Rubix"); effort became the multi-site publishing platform
 - Led the transformation of the legacy Answers.com PHP codebase into a multi-site publishing platform enabling revenue analysts, content editors, designers, and front-end developers to collaborate on leading digital content properties
 - Built **automated ad bidding systems** acting on revenue models and intraday metrics, managing multi-million dollar daily budgets across Google AdX/DFP, OpenX, Index Exchange, AOL, Rubicon, and others
 - Integrated header bidders and direct deal advertisers; supported 50–150 experiments/week on Revenue Operations Engineering team
@@ -120,7 +119,7 @@ Embedded consulting engagements at Bayer Crop Science and PepsiCo; also contribu
 - Integrated client applications with Facebook, ExactTarget, and Salesforce
 - Administered Linux VPS servers with automated configuration via Puppet, Ansible, and Capistrano
 
-**Company context:** ~71–75 employees during Pat's tenure. Full-service agency with deep agriculture vertical. Leadership: Tina VonderHaar, President & CEO; JD Guenther, VP/Executive Creative Director. Member of Worldwide Partners (world's largest independent agency network). National EPA Energy Star Partner of the Year for Sustained Excellence (2012). Notable clients: Monsanto, Scottrade, P&G, Syngenta, Royal Canin, Dairy Queen, Pampers Professional.
+**Company context:** ~71–75 employees during Pat's tenure. Full-service agency with deep agriculture vertical. Member of Worldwide Partners (world's largest independent agency network). National EPA Energy Star Partner of the Year for Sustained Excellence (2012). Notable clients: Monsanto, Scottrade, P&G, Syngenta, Royal Canin, Dairy Queen, Pampers Professional.
 
 ---
 
@@ -140,7 +139,7 @@ Developer & Founder
 Parsed subject and sentiment data from Twitter's Streaming API based on hashtag pairing — users tagged content with either `#uppr` or `#dwnr` to express sentiment. Implemented first in Erlang, then rewritten in Node.js.
 
 ### Gnomium.com | 2011 – 2012
-Developer & Co-founder (with Jared Macke)
+Developer & Co-founder
 
 A pairwise comparison/ranking product built around a proprietary scoring algorithm called **"The Gnomium Number"** — users voted on side-by-side comparisons and the algorithm generated ranked scores from accumulated results (conceptually: Facemash applied to arbitrary content). Server infrastructure built on Erlang; application layer in Rails and Node.js. Real infrastructure: live domain, SSL certs, Heroku deployment, embeddable survey/evaluation flow. GitHub repos: `patmcnally/gnomium-astromash`, `patmcnally/research.gnomium.com`. Did not reach commercial viability.
 
