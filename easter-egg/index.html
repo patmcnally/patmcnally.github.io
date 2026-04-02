@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>???</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+    body {
+      background-color: #6fa430;
+      background-image: url('grass_tile.png');
+      background-repeat: repeat;
+      background-size: 128px 128px;
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+  </style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+const FRAME_SIZE = 32;
+const SCALE = 4;
+const DISPLAY = FRAME_SIZE * SCALE;
+const FRAMES = 4;
+const FRAME_MS = 200;
+const SPEED = 1.2;
+
+const DIR = { DOWN: 0, UP: 1, LEFT: 2, RIGHT: 3 };
+
+const characterDefs = [
+  { name: 'druid',     walk: 'druid_walk.png',     shadow: 'druid_shadow.png' },
+  { name: 'barbarian', walk: 'barbarian_walk.png',  shadow: 'barbarian_shadow.png' },
+  { name: 'rogue',     walk: 'rogue_walk.png',      shadow: 'rogue_shadow.png' },
+  { name: 'human',     walk: 'human_walk.png',      shadow: 'human_shadow.png' },
+  { name: 'orc',       walk: 'orc_walk.png',        shadow: 'orc_shadow.png' },
+];
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error(`Failed: ${src}`));
+    img.src = src;
+  });
+}
+
+function randomDir() {
+  return [DIR.DOWN, DIR.UP, DIR.LEFT, DIR.RIGHT][Math.floor(Math.random() * 4)];
+}
+
+function velocityFromDir(dir) {
+  switch (dir) {
+    case DIR.DOWN:  return { vx: 0,      vy: SPEED  };
+    case DIR.UP:    return { vx: 0,      vy: -SPEED };
+    case DIR.LEFT:  return { vx: -SPEED, vy: 0      };
+    case DIR.RIGHT: return { vx: SPEED,  vy: 0      };
+  }
+}
+
+async function main() {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.imageSmoothingEnabled = false;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const characters = await Promise.all(characterDefs.map(async (def, i) => {
+    const [walkImg, shadowImg] = await Promise.all([
+      loadImage(def.walk),
+      loadImage(def.shadow),
+    ]);
+    const angle = (i / characterDefs.length) * Math.PI * 2;
+    const cx = canvas.width  / 2 + Math.cos(angle) * 200;
+    const cy = canvas.height / 2 + Math.sin(angle) * 150;
+    const dir = randomDir();
+    const { vx, vy } = velocityFromDir(dir);
+    return {
+      walkImg, shadowImg,
+      x: cx, y: cy,
+      dir, vx, vy,
+      frame: Math.floor(Math.random() * FRAMES),
+      frameTimer: 0,
+      dirTimer: 0,
+      dirInterval: 2000 + Math.random() * 3000,
+    };
+  }));
+
+  let lastTime = null;
+
+  function loop(ts) {
+    if (!lastTime) lastTime = ts;
+    const dt = Math.min(ts - lastTime, 50);
+    lastTime = ts;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const char of characters) {
+      char.frameTimer += dt;
+      if (char.frameTimer >= FRAME_MS) {
+        char.frameTimer -= FRAME_MS;
+        char.frame = (char.frame + 1) % FRAMES;
+      }
+
+      char.dirTimer += dt;
+      if (char.dirTimer >= char.dirInterval) {
+        char.dirTimer = 0;
+        char.dirInterval = 2000 + Math.random() * 3000;
+        char.dir = randomDir();
+        const v = velocityFromDir(char.dir);
+        char.vx = v.vx; char.vy = v.vy;
+      }
+
+      char.x += char.vx;
+      char.y += char.vy;
+
+      const maxX = canvas.width  - DISPLAY;
+      const maxY = canvas.height - DISPLAY;
+
+      if (char.x < 0)    { char.x = 0;    char.dir = DIR.RIGHT; char.vx =  SPEED; char.vy = 0; char.dirTimer = 0; }
+      if (char.x > maxX) { char.x = maxX; char.dir = DIR.LEFT;  char.vx = -SPEED; char.vy = 0; char.dirTimer = 0; }
+      if (char.y < 0)    { char.y = 0;    char.dir = DIR.DOWN;  char.vx = 0; char.vy =  SPEED; char.dirTimer = 0; }
+      if (char.y > maxY) { char.y = maxY; char.dir = DIR.UP;    char.vx = 0; char.vy = -SPEED; char.dirTimer = 0; }
+
+      const sx = char.frame * FRAME_SIZE;
+      const sy = char.dir   * FRAME_SIZE;
+      const dx = Math.round(char.x);
+      const dy = Math.round(char.y);
+
+      ctx.drawImage(char.shadowImg, sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
+      ctx.drawImage(char.walkImg,   sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
+    }
+
+    requestAnimationFrame(loop);
+  }
+
+  requestAnimationFrame(loop);
+}
+
+main().catch(console.error);
+</script>
+</body>
+</html>
