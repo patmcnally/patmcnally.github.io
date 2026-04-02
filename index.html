@@ -5,57 +5,6 @@
   <title>Pat McNally</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    #pi-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 24px;
-      font-size: 22px;
-      color: rgba(0,0,0,0.18);
-      cursor: pointer;
-      user-select: none;
-      transition: color 0.2s;
-      background: none;
-      border: none;
-      padding: 0;
-      line-height: 1;
-    }
-    #pi-btn:hover { color: rgba(0,0,0,0.45); }
-
-    #easter-egg-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-    }
-    #easter-egg-overlay.open { display: flex; }
-
-    #easter-egg-frame {
-      width: min(900px, 92vw);
-      height: min(600px, 80vh);
-      border: none;
-      border-radius: 4px;
-      display: block;
-    }
-
-    #easter-egg-close {
-      position: fixed;
-      top: 16px;
-      right: 20px;
-      font-size: 28px;
-      color: #fff;
-      cursor: pointer;
-      background: none;
-      border: none;
-      line-height: 1;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-    }
-    #easter-egg-close:hover { opacity: 1; }
-  </style>
 </head>
 <body>
   <main>
@@ -65,37 +14,5 @@
       <a href="https://www.linkedin.com/in/patrickmcnally">LinkedIn</a>
     </nav>
   </main>
-
-  <button id="pi-btn" title="π">π</button>
-
-  <div id="easter-egg-overlay">
-    <button id="easter-egg-close" title="Close">×</button>
-    <iframe id="easter-egg-frame" src="" allowfullscreen></iframe>
-  </div>
-
-  <script>
-    const btn     = document.getElementById('pi-btn');
-    const overlay = document.getElementById('easter-egg-overlay');
-    const frame   = document.getElementById('easter-egg-frame');
-    const close   = document.getElementById('easter-egg-close');
-
-    btn.addEventListener('click', () => {
-      frame.src = 'easter-egg/index.html';
-      overlay.classList.add('open');
-    });
-
-    function closeOverlay() {
-      overlay.classList.remove('open');
-      frame.src = '';
-    }
-
-    close.addEventListener('click', closeOverlay);
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) closeOverlay();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeOverlay();
-    });
-  </script>
 </body>
 </html>
