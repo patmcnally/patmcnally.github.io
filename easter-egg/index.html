@@ -29,9 +29,6 @@ const FRAMES = 4;
 const FRAME_MS = 200;
 const SPEED = 1.2;
 
-const EXPLOSION_FRAMES = 11;
-const EXPLOSION_MS = 80;
-
 const DIR = { DOWN: 0, UP: 1, LEFT: 2, RIGHT: 3 };
 
 const characterDefs = [
@@ -88,8 +85,6 @@ async function main() {
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
 
-  const explosionImg = await loadImage('explosion.png');
-  const explosions = [];
   // track colliding pairs to avoid re-triggering until they separate
   const collidingPairs = new Set();
 
@@ -100,6 +95,14 @@ async function main() {
   }
   resize();
   window.addEventListener('resize', resize);
+
+  // cache images by src so respawn can reuse them
+  const loadedImages = {};
+  for (const def of characterDefs) {
+    const [w, s] = await Promise.all([loadImage(def.walk), loadImage(def.shadow)]);
+    loadedImages[def.walk]   = w;
+    loadedImages[def.shadow] = s;
+  }
 
   const characters = characterDefs.map((def, i) => {
     const angle = (i / characterDefs.length) * Math.PI * 2;
@@ -144,14 +147,6 @@ async function main() {
     });
   }
 
-  // cache images by src so respawn can reuse them
-  const loadedImages = {};
-  for (const def of characterDefs) {
-    const [w, s] = await Promise.all([loadImage(def.walk), loadImage(def.shadow)]);
-    loadedImages[def.walk]   = w;
-    loadedImages[def.shadow] = s;
-  }
-
   function loop(ts) {
     if (!lastTime) lastTime = ts;
     const dt = Math.min(ts - lastTime, 50);
@@ -169,12 +164,6 @@ async function main() {
                         a.y < b.y + DISPLAY && a.y + DISPLAY > b.y;
         if (overlap && !collidingPairs.has(key)) {
           collidingPairs.add(key);
-          explosions.push({
-            x: (a.x + b.x) / 2,
-            y: (a.y + b.y) / 2,
-            frame: 0,
-            frameTimer: 0,
-          });
           a.dead = true;
           b.dead = true;
         } else if (!overlap) {
@@ -183,7 +172,7 @@ async function main() {
       }
     }
 
-    // remove sprites killed by explosions
+    // remove sprites killed by collision
     for (let i = characters.length - 1; i >= 0; i--) {
       if (characters[i].dead) characters.splice(i, 1);
     }
@@ -193,16 +182,6 @@ async function main() {
     if (respawnTimer >= 2000) {
       respawnTimer -= 2000;
       spawnCharacter();
-    }
-
-    // update explosions
-    for (let i = explosions.length - 1; i >= 0; i--) {
-      explosions[i].frameTimer += dt;
-      if (explosions[i].frameTimer >= EXPLOSION_MS) {
-        explosions[i].frameTimer -= EXPLOSION_MS;
-        explosions[i].frame++;
-      }
-      if (explosions[i].frame >= EXPLOSION_FRAMES) explosions.splice(i, 1);
     }
 
     let oldest = null;
@@ -247,15 +226,6 @@ async function main() {
       if (char === oldest) ctx.filter = 'sepia(1) saturate(8) hue-rotate(320deg)';
       ctx.drawImage(char.walkImg,   sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
       ctx.filter = 'none';
-    }
-
-    // draw explosions on top
-    for (const exp of explosions) {
-      ctx.drawImage(
-        explosionImg,
-        exp.frame * FRAME_SIZE, 0, FRAME_SIZE, FRAME_SIZE,
-        Math.round(exp.x), Math.round(exp.y), DISPLAY, DISPLAY
-      );
     }
 
     requestAnimationFrame(loop);
