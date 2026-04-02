@@ -112,6 +112,7 @@ async function main() {
     const dir = randomDir();
     const { vx, vy } = velocityFromDir(dir);
     return {
+      id: i,
       walkImg, shadowImg,
       x: cx, y: cy,
       dir, vx, vy,
@@ -135,21 +136,29 @@ async function main() {
     for (let i = 0; i < characters.length; i++) {
       for (let j = i + 1; j < characters.length; j++) {
         const a = characters[i], b = characters[j];
-        const key = `${i}-${j}`;
+        if (a.dead || b.dead) continue;
+        const key = `${Math.min(a.id, b.id)}-${Math.max(a.id, b.id)}`;
         const overlap = a.x < b.x + DISPLAY && a.x + DISPLAY > b.x &&
                         a.y < b.y + DISPLAY && a.y + DISPLAY > b.y;
         if (overlap && !collidingPairs.has(key)) {
           collidingPairs.add(key);
           explosions.push({
-            x: (a.x + b.x) / 2 + DISPLAY / 2 - DISPLAY / 2,
-            y: (a.y + b.y) / 2 + DISPLAY / 2 - DISPLAY / 2,
+            x: (a.x + b.x) / 2,
+            y: (a.y + b.y) / 2,
             frame: 0,
             frameTimer: 0,
           });
+          a.dead = true;
+          b.dead = true;
         } else if (!overlap) {
           collidingPairs.delete(key);
         }
       }
+    }
+
+    // remove sprites killed by explosions
+    for (let i = characters.length - 1; i >= 0; i--) {
+      if (characters[i].dead) characters.splice(i, 1);
     }
 
     // update explosions
