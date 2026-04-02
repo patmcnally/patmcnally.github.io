@@ -87,6 +87,7 @@ async function main() {
 
   // track colliding pairs to avoid re-triggering until they separate
   const collidingPairs = new Set();
+  const puffs = [];
 
   function resize() {
     canvas.width = window.innerWidth;
@@ -166,6 +167,16 @@ async function main() {
           collidingPairs.add(key);
           a.dead = true;
           b.dead = true;
+          puffs.push({
+            x: (a.x + b.x) / 2 + DISPLAY / 2,
+            y: (a.y + b.y) / 2 + DISPLAY / 2,
+            progress: 0,
+            circles: Array.from({length: 5}, () => ({
+              dx: (Math.random() - 0.5) * DISPLAY * 0.6,
+              dy: (Math.random() - 0.5) * DISPLAY * 0.6,
+              r0: 10 + Math.random() * 14,
+            })),
+          });
         } else if (!overlap) {
           collidingPairs.delete(key);
         }
@@ -226,6 +237,24 @@ async function main() {
       if (char === oldest) ctx.filter = 'sepia(1) saturate(8) hue-rotate(320deg)';
       ctx.drawImage(char.walkImg,   sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
       ctx.filter = 'none';
+    }
+
+    // draw smoke puffs
+    for (let i = puffs.length - 1; i >= 0; i--) {
+      const p = puffs[i];
+      p.progress += dt / 500;
+      if (p.progress >= 1) { puffs.splice(i, 1); continue; }
+      const t = p.progress;
+      ctx.save();
+      for (const c of p.circles) {
+        const r = (c.r0 + t * c.r0 * 2) * SCALE / 4;
+        ctx.globalAlpha = (1 - t) * 0.75;
+        ctx.fillStyle = `rgb(210,210,210)`;
+        ctx.beginPath();
+        ctx.arc(Math.round(p.x + c.dx * (1 + t)), Math.round(p.y + c.dy * (1 + t)), r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
     }
 
     requestAnimationFrame(loop);
