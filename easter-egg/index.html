@@ -117,6 +117,7 @@ async function main() {
       frameTimer: 0,
       dirTimer: 0,
       dirInterval: 2000 + Math.random() * 3000,
+      age: 0,
     };
   });
 
@@ -139,6 +140,7 @@ async function main() {
       frameTimer: 0,
       dirTimer: 0,
       dirInterval: 2000 + Math.random() * 3000,
+      age: 0,
     });
   }
 
@@ -203,6 +205,12 @@ async function main() {
       if (explosions[i].frame >= EXPLOSION_FRAMES) explosions.splice(i, 1);
     }
 
+    let oldest = null;
+    for (const char of characters) {
+      char.age += dt;
+      if (!oldest || char.age > oldest.age) oldest = char;
+    }
+
     for (const char of characters) {
       char.frameTimer += dt;
       if (char.frameTimer >= FRAME_MS) {
@@ -236,7 +244,9 @@ async function main() {
       const dy = Math.round(char.y);
 
       ctx.drawImage(char.shadowImg, sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
+      if (char === oldest) ctx.filter = 'sepia(1) saturate(8) hue-rotate(320deg)';
       ctx.drawImage(char.walkImg,   sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
+      ctx.filter = 'none';
     }
 
     // draw explosions on top
