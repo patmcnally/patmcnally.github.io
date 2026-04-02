@@ -29,6 +29,9 @@ const FRAMES = 4;
 const FRAME_MS = 200;
 const SPEED = 1.2;
 
+const EXPLOSION_FRAMES = 11;
+const EXPLOSION_MS = 80;
+
 const DIR = { DOWN: 0, UP: 1, LEFT: 2, RIGHT: 3 };
 
 const characterDefs = [
@@ -85,6 +88,11 @@ async function main() {
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
 
+  const explosionImg = await loadImage('explosion.png');
+  const explosions = [];
+  // track colliding pairs to avoid re-triggering until they separate
+  const collidingPairs = new Set();
+
   function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -123,6 +131,37 @@ async function main() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // collision detection
+    for (let i = 0; i < characters.length; i++) {
+      for (let j = i + 1; j < characters.length; j++) {
+        const a = characters[i], b = characters[j];
+        const key = `${i}-${j}`;
+        const overlap = a.x < b.x + DISPLAY && a.x + DISPLAY > b.x &&
+                        a.y < b.y + DISPLAY && a.y + DISPLAY > b.y;
+        if (overlap && !collidingPairs.has(key)) {
+          collidingPairs.add(key);
+          explosions.push({
+            x: (a.x + b.x) / 2 + DISPLAY / 2 - DISPLAY / 2,
+            y: (a.y + b.y) / 2 + DISPLAY / 2 - DISPLAY / 2,
+            frame: 0,
+            frameTimer: 0,
+          });
+        } else if (!overlap) {
+          collidingPairs.delete(key);
+        }
+      }
+    }
+
+    // update explosions
+    for (let i = explosions.length - 1; i >= 0; i--) {
+      explosions[i].frameTimer += dt;
+      if (explosions[i].frameTimer >= EXPLOSION_MS) {
+        explosions[i].frameTimer -= EXPLOSION_MS;
+        explosions[i].frame++;
+      }
+      if (explosions[i].frame >= EXPLOSION_FRAMES) explosions.splice(i, 1);
+    }
+
     for (const char of characters) {
       char.frameTimer += dt;
       if (char.frameTimer >= FRAME_MS) {
@@ -157,6 +196,15 @@ async function main() {
 
       ctx.drawImage(char.shadowImg, sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
       ctx.drawImage(char.walkImg,   sx, sy, FRAME_SIZE, FRAME_SIZE, dx, dy, DISPLAY, DISPLAY);
+    }
+
+    // draw explosions on top
+    for (const exp of explosions) {
+      ctx.drawImage(
+        explosionImg,
+        exp.frame * FRAME_SIZE, 0, FRAME_SIZE, FRAME_SIZE,
+        Math.round(exp.x), Math.round(exp.y), DISPLAY, DISPLAY
+      );
     }
 
     requestAnimationFrame(loop);
