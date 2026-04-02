@@ -101,11 +101,7 @@ async function main() {
   resize();
   window.addEventListener('resize', resize);
 
-  const characters = await Promise.all(characterDefs.map(async (def, i) => {
-    const [walkImg, shadowImg] = await Promise.all([
-      loadImage(def.walk),
-      loadImage(def.shadow),
-    ]);
+  const characters = characterDefs.map((def, i) => {
     const angle = (i / characterDefs.length) * Math.PI * 2;
     const cx = canvas.width  / 2 + Math.cos(angle) * 200;
     const cy = canvas.height / 2 + Math.sin(angle) * 150;
@@ -113,7 +109,8 @@ async function main() {
     const { vx, vy } = velocityFromDir(dir);
     return {
       id: i,
-      walkImg, shadowImg,
+      walkImg:   loadedImages[def.walk],
+      shadowImg: loadedImages[def.shadow],
       x: cx, y: cy,
       dir, vx, vy,
       frame: Math.floor(Math.random() * FRAMES),
@@ -121,9 +118,37 @@ async function main() {
       dirTimer: 0,
       dirInterval: 2000 + Math.random() * 3000,
     };
-  }));
+  });
 
   let lastTime = null;
+  let nextId = characterDefs.length;
+  let respawnTimer = 0;
+
+  function spawnCharacter() {
+    const def = characterDefs[Math.floor(Math.random() * characterDefs.length)];
+    const dir = randomDir();
+    const { vx, vy } = velocityFromDir(dir);
+    const x = Math.random() * (canvas.width  - DISPLAY);
+    const y = Math.random() * (canvas.height - DISPLAY);
+    characters.push({
+      id: nextId++,
+      walkImg:   loadedImages[def.walk],
+      shadowImg: loadedImages[def.shadow],
+      x, y, dir, vx, vy,
+      frame: Math.floor(Math.random() * FRAMES),
+      frameTimer: 0,
+      dirTimer: 0,
+      dirInterval: 2000 + Math.random() * 3000,
+    });
+  }
+
+  // cache images by src so respawn can reuse them
+  const loadedImages = {};
+  for (const def of characterDefs) {
+    const [w, s] = await Promise.all([loadImage(def.walk), loadImage(def.shadow)]);
+    loadedImages[def.walk]   = w;
+    loadedImages[def.shadow] = s;
+  }
 
   function loop(ts) {
     if (!lastTime) lastTime = ts;
@@ -159,6 +184,13 @@ async function main() {
     // remove sprites killed by explosions
     for (let i = characters.length - 1; i >= 0; i--) {
       if (characters[i].dead) characters.splice(i, 1);
+    }
+
+    // respawn one character every 2 seconds
+    respawnTimer += dt;
+    if (respawnTimer >= 2000) {
+      respawnTimer -= 2000;
+      spawnCharacter();
     }
 
     // update explosions
